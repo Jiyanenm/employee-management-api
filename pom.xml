@@ -11,8 +11,11 @@
 	<groupId>com.nkosinathi</groupId>
 	<artifactId>employee-management-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
+	<name>Employee Management API</name>
+
+	<description>
+		RESTful Employee Management API built with Spring Boot, Firebase Firestore and Java 17.
+	</description>
 	<url/>
 	<licenses>
 		<license/>
