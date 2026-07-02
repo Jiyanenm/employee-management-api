@@ -1,9 +1,9 @@
-package com.nkosinathi.employee_management_api;
+package com.nkosinathi.employeemanagement;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+@SpringBootTest(classes = EmployeeManagementApiApplication.class)
 class EmployeeManagementApiApplicationTests {
 
 	@Test
