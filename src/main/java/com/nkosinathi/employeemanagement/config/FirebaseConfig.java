@@ -9,9 +9,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 @ConditionalOnProperty(
@@ -24,23 +26,25 @@ public class FirebaseConfig {
     @Bean
     public Firestore firestore() throws IOException {
 
-        String credentialsPath = System.getenv("FIREBASE_CREDENTIALS");
+        String json = System.getenv("FIREBASE_CREDENTIALS");
 
-        if (credentialsPath == null || credentialsPath.isBlank()) {
-            throw new IOException("FIREBASE_CREDENTIALS environment variable is not set.");
+        if (json == null || json.isEmpty()) {
+            throw new IOException("FIREBASE_CREDENTIALS env var not set");
         }
 
-        try (InputStream serviceAccount = new FileInputStream(credentialsPath)) {
+        // IMPORTANT: clean escaped characters from Render
+        json = json.replace("\\n", "\n");
 
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .build();
+        InputStream serviceAccount = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
 
-            if (FirebaseApp.getApps().isEmpty()) {
-                FirebaseApp.initializeApp(options);
-            }
+        FirebaseOptions options = FirebaseOptions.builder()
+                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                .build();
 
-            return FirestoreClient.getFirestore();
+        if (FirebaseApp.getApps().isEmpty()) {
+            FirebaseApp.initializeApp(options);
         }
+
+        return FirestoreClient.getFirestore();
     }
 }
