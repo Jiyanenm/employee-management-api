@@ -37,6 +37,10 @@ jobs:
       # 5. Run tests
       - name: Run Tests
         run: mvn test
+      - name: Create Firebase key file
+        run: echo "${{ secrets.FIREBASE_CREDENTIALS }}" > serviceAccount.json
 
+      - name: Set env variable
+        run: echo "FIREBASE_CREDENTIALS=$PWD/serviceAccount.json" >> $GITHUB_ENV
       - name: Generate Test Report
         run: mvn surefire-report:report
