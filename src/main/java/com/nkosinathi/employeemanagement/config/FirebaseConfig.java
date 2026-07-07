@@ -19,25 +19,26 @@ public class FirebaseConfig {
 
         String path = System.getenv("FIREBASE_CREDENTIALS");
 
-        if (path == null || path.isEmpty()) {
-            throw new IllegalStateException(
-                    "FIREBASE_CREDENTIALS environment variable is not set"
-            );
-        }
+        System.out.println("FIREBASE_CREDENTIALS = " + path);
 
         File firebaseFile = new File(path);
 
-        System.out.println("Firebase credentials path: " + path);
-        System.out.println("Firebase file exists: " + firebaseFile.exists());
+        System.out.println("Absolute path = " + firebaseFile.getAbsolutePath());
+        System.out.println("Exists = " + firebaseFile.exists());
+
+        if (!firebaseFile.exists()) {
+            throw new IllegalStateException(
+                    "Firebase key missing: " + firebaseFile.getAbsolutePath()
+            );
+        }
 
         try (FileInputStream serviceAccount = new FileInputStream(firebaseFile)) {
 
-            FirebaseOptions options =
-                    FirebaseOptions.builder()
-                            .setCredentials(
-                                    GoogleCredentials.fromStream(serviceAccount)
-                            )
-                            .build();
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(
+                            GoogleCredentials.fromStream(serviceAccount)
+                    )
+                    .build();
 
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
