@@ -15,8 +15,8 @@ RUN ./mvnw clean package -DskipTests
 # Render provides the PORT environment variable
 EXPOSE 8080
 
-# Firebase credentials path
-ENV FIREBASE_CREDENTIALS=/app/config/serviceAccountKey.json
+# Firebase credentials path (Render Secret File)
+ENV FIREBASE_CREDENTIALS=/etc/secrets/config/serviceAccountKey.json
 
 # Start application
 ENTRYPOINT ["sh", "-c", "java -jar target/employee-management-api-0.0.1-SNAPSHOT.jar --server.port=${PORT:-8080}"]
