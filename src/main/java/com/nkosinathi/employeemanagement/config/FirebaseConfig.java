@@ -5,41 +5,29 @@ import com.google.cloud.firestore.Firestore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 @Configuration
-@ConditionalOnProperty(
-        name = "firebase.enabled",
-        havingValue = "true",
-        matchIfMissing = true
-)
 public class FirebaseConfig {
 
     @Bean
-    public Firestore firestore() throws IOException {
+    public Firestore firestore() throws Exception {
 
-        String json = System.getenv("FIREBASE_CREDENTIALS");
+        String path = "C:\\Users\\kelly\\Downloads\\firebase-service-account.json";
 
-        if (json == null || json.isEmpty()) {
-            throw new IOException("FIREBASE_CREDENTIALS env var not set");
-        }
+        System.out.println("Firebase file exists: " + new java.io.File(path).exists());
 
-        // IMPORTANT: clean escaped characters from Render
-        json = json.replace("\\n", "\n");
+        FileInputStream serviceAccount = new FileInputStream(path);
 
-        InputStream serviceAccount = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
-
-        FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .build();
+        FirebaseOptions options =
+                FirebaseOptions.builder()
+                        .setCredentials(
+                                GoogleCredentials.fromStream(serviceAccount)
+                        )
+                        .build();
 
         if (FirebaseApp.getApps().isEmpty()) {
             FirebaseApp.initializeApp(options);
