@@ -8,6 +8,7 @@ import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.File;
 import java.io.FileInputStream;
 
 @Configuration
@@ -16,21 +17,31 @@ public class FirebaseConfig {
     @Bean
     public Firestore firestore() throws Exception {
 
-        String path = "C:\\Users\\kelly\\Downloads\\firebase-service-account.json";
+        String path = System.getenv("FIREBASE_CREDENTIALS");
 
-        System.out.println("Firebase file exists: " + new java.io.File(path).exists());
+        if (path == null || path.isEmpty()) {
+            throw new IllegalStateException(
+                    "FIREBASE_CREDENTIALS environment variable is not set"
+            );
+        }
 
-        FileInputStream serviceAccount = new FileInputStream(path);
+        File firebaseFile = new File(path);
 
-        FirebaseOptions options =
-                FirebaseOptions.builder()
-                        .setCredentials(
-                                GoogleCredentials.fromStream(serviceAccount)
-                        )
-                        .build();
+        System.out.println("Firebase credentials path: " + path);
+        System.out.println("Firebase file exists: " + firebaseFile.exists());
 
-        if (FirebaseApp.getApps().isEmpty()) {
-            FirebaseApp.initializeApp(options);
+        try (FileInputStream serviceAccount = new FileInputStream(firebaseFile)) {
+
+            FirebaseOptions options =
+                    FirebaseOptions.builder()
+                            .setCredentials(
+                                    GoogleCredentials.fromStream(serviceAccount)
+                            )
+                            .build();
+
+            if (FirebaseApp.getApps().isEmpty()) {
+                FirebaseApp.initializeApp(options);
+            }
         }
 
         return FirestoreClient.getFirestore();

@@ -22,7 +22,7 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      # 3. Cache Maven dependencies (faster builds)
+      # 3. Cache Maven dependencies
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
@@ -30,17 +30,24 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      # 4. Build project
+      # 4. Create Firebase credentials
+      - name: Create Firebase key file
+        run: |
+          echo '${{ secrets.FIREBASE_CREDENTIALS }}' > $HOME/serviceAccount.json
+
+      # 5. Set Firebase environment variable
+      - name: Set Firebase environment variable
+        run: |
+          echo "FIREBASE_CREDENTIALS=$HOME/serviceAccount.json" >> $GITHUB_ENV
+
+      # 6. Build project
       - name: Build with Maven
         run: mvn clean compile
 
-      # 5. Run tests
+      # 7. Run tests
       - name: Run Tests
         run: mvn test
-      - name: Create Firebase key file
-        run: echo "${{ secrets.FIREBASE_CREDENTIALS }}" > serviceAccount.json
 
-      - name: Set env variable
-        run: echo "FIREBASE_CREDENTIALS=$PWD/serviceAccount.json" >> $GITHUB_ENV
+      # 8. Generate Test Report
       - name: Generate Test Report
         run: mvn surefire-report:report
