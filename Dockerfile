@@ -1,7 +1,6 @@
 # Use Java 17
 FROM eclipse-temurin:17-jdk
 
-# Set working directory
 WORKDIR /app
 
 # Copy project files
@@ -10,13 +9,14 @@ COPY . .
 # Give execute permission to Maven Wrapper
 RUN chmod +x mvnw
 
-# Build the application
+# Build the Spring Boot application
 RUN ./mvnw clean package -DskipTests
 
-# Cloud platforms like Render expose the PORT env variable
+# Render provides the PORT environment variable
 EXPOSE 8080
 
+# Firebase credentials path
 ENV FIREBASE_CREDENTIALS=/app/config/serviceAccountKey.json
 
-# Start the application
-ENTRYPOINT ["java","-jar","target/employee-management-api-0.0.1-SNAPSHOT.jar"]
+# Start application
+ENTRYPOINT ["sh", "-c", "java -jar target/employee-management-api-0.0.1-SNAPSHOT.jar --server.port=${PORT:-8080}"]

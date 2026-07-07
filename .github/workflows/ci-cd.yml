@@ -42,7 +42,7 @@ jobs:
 
       # 6. Build project
       - name: Build with Maven
-        run: mvn clean compile
+        run: mvn clean package -DskipTests
 
       # 7. Run tests
       - name: Run Tests
