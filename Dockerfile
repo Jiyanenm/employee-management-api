@@ -16,6 +16,7 @@ RUN ./mvnw clean package -DskipTests
 # Cloud platforms like Render expose the PORT env variable
 EXPOSE 8080
 
+ENV FIREBASE_CREDENTIALS=/app/config/serviceAccountKey.json
 
 # Start the application
 ENTRYPOINT ["java","-jar","target/employee-management-api-0.0.1-SNAPSHOT.jar"]
