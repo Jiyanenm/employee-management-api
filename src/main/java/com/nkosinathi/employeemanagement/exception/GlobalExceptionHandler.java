@@ -1,5 +1,6 @@
 package com.nkosinathi.employeemanagement.exception;
 
+import com.nkosinathi.employeemanagement.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,15 +13,18 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGeneral(Exception e) {
+    public ResponseEntity<ApiResponse<String>> handleGeneral(Exception ex) {
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", 500);
-        response.put("error", "Internal Server Error");
-        response.put("message", e.getMessage());
+        ex.printStackTrace();
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(response);
+                .body(
+                        new ApiResponse<>(
+                                false,
+                                ex.toString(),
+                                null
+                        )
+                );
     }
 }
