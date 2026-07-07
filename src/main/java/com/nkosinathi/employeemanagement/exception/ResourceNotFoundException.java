@@ -11,24 +11,20 @@ public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {
         super(message);
     }
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Object>> handleValidationException(
-            MethodArgumentNotValidException ex) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<String>> handleGeneral(Exception ex) {
 
-        String message =
-                ex.getBindingResult()
-                        .getFieldError()
-                        .getDefaultMessage();
+        ex.printStackTrace();
 
-        ApiResponse<Object> response =
+        ApiResponse<String> response =
                 new ApiResponse<>(
                         false,
-                        message,
+                        ex.toString(),
                         null
                 );
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(500)
                 .body(response);
     }
 }
